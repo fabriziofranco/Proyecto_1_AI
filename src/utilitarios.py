@@ -50,22 +50,35 @@ def get_vector_from_image(image, iterations):
     LL, (LH, HL, HH) = pywt.dwt2(image, 'haar')
     for _ in range(iterations - 1):
         LL, (LH, HL, HH) = pywt.dwt2(LL, 'haar')
-    return LL.flatten()
+    return LL, LL.flatten()
 
 
 
 def get_data(src_dir, iterations):
     x = []
     y = []
+    raw_x = []
 
     for class_dir in os.listdir(src_dir):
         for train_img in os.listdir(src_dir + class_dir):
             image_path = f"{src_dir}{class_dir}/{train_img}"
             img = Image.open(image_path)
+
             fv = get_vector_from_image(img, iterations)
-            x.append(fv)
+            raw_x.append(fv[0])
+            x.append(fv[1])
             y.append(int(class_dir))
-    return np.asarray(x), np.asarray(y)
+    return np.asarray(x), np.asarray(y), np.asarray(raw_x)
+
+
+def iterate_data(X_raw):
+    X = []
+    X_new_raw = []
+    for i in range(X_raw.shape[0]):
+        LL , (LH, HL, HH) = pywt.dwt2(X_raw[i], 'haar')
+        X_new_raw.append(LL)
+        X.append(LL.flatten())
+    return np.asarray(X), np.asarray(X_new_raw)
 
 
 
