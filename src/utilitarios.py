@@ -8,6 +8,7 @@ import pywt
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 
+random_seed = np.random.seed(42)
 
 def resize_and_save_img(src, destination_path):
     original_img = cv2.imread(src)
@@ -129,37 +130,21 @@ def get_non_stratified_k_fold_cross_validation(X, y, number_of_folds, random_see
         k_folds.append(fold)
     return k_folds
 
-
-
-def resample_x_and_y(X, y, training_sample, random_seed):
-    X_train = []
-    y_train = []
-    X_test = []
-    y_test = []
-
-    index_used = [False for _ in range(len(X))]
-
-    # training
-    for _ in range(math.floor(len(X) * training_sample)):
-        new_index = math.floor(np.RandomState(seed=random_seed).rand() * len(X))
-        index_used[new_index] = True
-        # print(math.floor(np.random.rand() * len(X)))
-        X_train.append(X[new_index])
-        y_train.append(y[new_index])
-
-    # testing
-    for i in range(len(X)):
-        if not index_used[i]:
-            X_test.append(X[i])
-            y_test.append(y[i])
-
+def resample_x_and_y(X, y, training_sample):
+    indices_train = np.random.randint(low = 0, high = len(X), size = math.floor(len(X) * training_sample))
+    indices_train = np.unique(indices_train).tolist()
+    X_train = X[indices_train]
+    y_train = y[indices_train]
+    X_test =  np.delete(X, indices_train, axis = 0)
+    y_test =  np.delete(y, indices_train, axis = 0)
     return X_train, y_train, X_test, y_test
 
 
-def get_bootstrap_subsets(X, y, k, training_sample, random_seed):
+def get_bootstrap_subsets(X, y, k, training_sample,random_seed):
+    np.random.seed(random_seed)
     subsets = []
     for _ in range(k):
-        X_train, y_train, X_test, y_test = resample_x_and_y(X, y, training_sample, random_seed)
+        X_train, y_train, X_test, y_test = resample_x_and_y(X, y, training_sample)
         subset = {}
         subset['X_train'] = X_train
         subset['X_test'] = X_test
