@@ -132,11 +132,13 @@ def get_non_stratified_k_fold_cross_validation(X, y, number_of_folds, random_see
 
 def resample_x_and_y(X, y, training_sample):
     indices_train = np.random.randint(low = 0, high = len(X), size = math.floor(len(X) * training_sample))
-    indices_train = np.unique(indices_train).tolist()
+    indices_train_unicos = np.unique(indices_train).tolist()
     X_train = X[indices_train]
     y_train = y[indices_train]
-    X_test =  np.delete(X, indices_train, axis = 0)
-    y_test =  np.delete(y, indices_train, axis = 0)
+
+    X_test =  np.delete(X, indices_train_unicos, axis = 0)
+    y_test =  np.delete(y, indices_train_unicos, axis = 0)
+
     return X_train, y_train, X_test, y_test
 
 
