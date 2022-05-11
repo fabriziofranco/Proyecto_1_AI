@@ -30,9 +30,6 @@ def resize_and_save_img(src, destination_path):
 
 
 def generate_new_data(): 
-    ''' Se corre solo una vez,
-    junta la data de Train y Test en un solo directorio unificado'''
-
     train_dir = "Data/Train/"
     test_dir = "Data/Test/"
     destination_dir = "Data_preprocesada/"
